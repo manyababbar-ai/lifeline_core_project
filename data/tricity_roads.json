@@ -1,0 +1,339 @@
+{
+  "nodes": [
+    {
+      "id": "NODE-PGIMER",
+      "lat": 30.7656,
+      "lon": 76.777,
+      "name": "PGI Roundabout (Madhya Marg)"
+    },
+    {
+      "id": "NODE-SEC17",
+      "lat": 30.741,
+      "lon": 76.784,
+      "name": "Sector 17 Plaza Intersection"
+    },
+    {
+      "id": "NODE-SEC16",
+      "lat": 30.749,
+      "lon": 76.7794,
+      "name": "Sector 16 GMSH Chowk"
+    },
+    {
+      "id": "NODE-SEC22",
+      "lat": 30.732,
+      "lon": 76.775,
+      "name": "Aroma Chowk Sector 22"
+    },
+    {
+      "id": "NODE-SEC35",
+      "lat": 30.725,
+      "lon": 76.755,
+      "name": "Sector 35 Kisan Bhawan Chowk"
+    },
+    {
+      "id": "NODE-SEC43",
+      "lat": 30.728,
+      "lon": 76.741,
+      "name": "ISBT Sector 43 Chowk"
+    },
+    {
+      "id": "NODE-SEC32",
+      "lat": 30.7073,
+      "lon": 76.7869,
+      "name": "GMCH 32 Chowk"
+    },
+    {
+      "id": "NODE-SEC26",
+      "lat": 30.722,
+      "lon": 76.812,
+      "name": "Grain Market Sector 26 Chowk"
+    },
+    {
+      "id": "NODE-TRIBUNE",
+      "lat": 30.702,
+      "lon": 76.795,
+      "name": "Tribune Chowk (Purv Marg / Dakshin Marg)"
+    },
+    {
+      "id": "NODE-HOUSING-BOARD",
+      "lat": 30.722,
+      "lon": 76.839,
+      "name": "Housing Board Chowk (Chd-Pkl Border)"
+    },
+    {
+      "id": "NODE-MANIMAJRA",
+      "lat": 30.726,
+      "lon": 76.845,
+      "name": "Old Ropar Road Manimajra"
+    },
+    {
+      "id": "NODE-MOHALI-PH7",
+      "lat": 30.71,
+      "lon": 76.715,
+      "name": "Phase 7 Mohali Lights"
+    },
+    {
+      "id": "NODE-MOHALI-PH8",
+      "lat": 30.7,
+      "lon": 76.72,
+      "name": "Fortis Chowk Phase 8 Mohali"
+    },
+    {
+      "id": "NODE-MOHALI-SEC70",
+      "lat": 30.705,
+      "lon": 76.705,
+      "name": "Mataur Chowk Sector 70/71"
+    },
+    {
+      "id": "NODE-AIRPORT-RD",
+      "lat": 30.68,
+      "lon": 76.73,
+      "name": "PR7 Airport Road Mohali"
+    },
+    {
+      "id": "NODE-KHARAR",
+      "lat": 30.742,
+      "lon": 76.645,
+      "name": "Kharar Flyover Junction"
+    },
+    {
+      "id": "NODE-SUNNY-ENCLAVE",
+      "lat": 30.748,
+      "lon": 76.678,
+      "name": "Sunny Enclave Gate"
+    },
+    {
+      "id": "NODE-PKL-SEC5",
+      "lat": 30.697,
+      "lon": 76.852,
+      "name": "Bela Vista Chowk Sector 5 Panchkula"
+    },
+    {
+      "id": "NODE-PKL-SEC7",
+      "lat": 30.692,
+      "lon": 76.85,
+      "name": "Sector 7/8 Dividing Road Panchkula"
+    },
+    {
+      "id": "NODE-PKL-SEC11",
+      "lat": 30.685,
+      "lon": 76.86,
+      "name": "Sector 11/15 Chowk Panchkula"
+    },
+    {
+      "id": "NODE-PKL-MDC",
+      "lat": 30.715,
+      "lon": 76.855,
+      "name": "Mansa Devi Complex Entry"
+    },
+    {
+      "id": "NODE-OLD-PKL",
+      "lat": 30.672,
+      "lon": 76.845,
+      "name": "Alchemist Road Old Panchkula"
+    },
+    {
+      "id": "NODE-ZIRAKPUR-CHOWK",
+      "lat": 30.645,
+      "lon": 76.82,
+      "name": "Zirakpur Flyover Crossing (NH-152/NH-5)"
+    },
+    {
+      "id": "NODE-DERABASSI",
+      "lat": 30.595,
+      "lon": 76.85,
+      "name": "Derabassi Bus Stand NH-152"
+    }
+  ],
+  "edges": [
+    {
+      "from": "NODE-PGIMER",
+      "to": "NODE-SEC16",
+      "length_m": 1500,
+      "speed_kmh": 50.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-SEC16",
+      "to": "NODE-SEC17",
+      "length_m": 1200,
+      "speed_kmh": 50.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-SEC17",
+      "to": "NODE-SEC26",
+      "length_m": 3100,
+      "speed_kmh": 55.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-SEC26",
+      "to": "NODE-HOUSING-BOARD",
+      "length_m": 3200,
+      "speed_kmh": 60.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-HOUSING-BOARD",
+      "to": "NODE-MANIMAJRA",
+      "length_m": 800,
+      "speed_kmh": 45.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-SEC16",
+      "to": "NODE-SEC22",
+      "length_m": 2000,
+      "speed_kmh": 50.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-SEC22",
+      "to": "NODE-SEC35",
+      "length_m": 1800,
+      "speed_kmh": 50.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-SEC35",
+      "to": "NODE-SEC43",
+      "length_m": 1700,
+      "speed_kmh": 50.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-SEC43",
+      "to": "NODE-SEC35",
+      "length_m": 1700,
+      "speed_kmh": 50.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-SEC35",
+      "to": "NODE-SEC32",
+      "length_m": 3200,
+      "speed_kmh": 55.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-SEC32",
+      "to": "NODE-TRIBUNE",
+      "length_m": 1400,
+      "speed_kmh": 55.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-HOUSING-BOARD",
+      "to": "NODE-TRIBUNE",
+      "length_m": 4500,
+      "speed_kmh": 65.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-TRIBUNE",
+      "to": "NODE-ZIRAKPUR-CHOWK",
+      "length_m": 6500,
+      "speed_kmh": 70.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-ZIRAKPUR-CHOWK",
+      "to": "NODE-DERABASSI",
+      "length_m": 6800,
+      "speed_kmh": 70.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-SEC43",
+      "to": "NODE-MOHALI-PH7",
+      "length_m": 2800,
+      "speed_kmh": 50.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-MOHALI-PH7",
+      "to": "NODE-MOHALI-PH8",
+      "length_m": 1600,
+      "speed_kmh": 50.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-MOHALI-PH7",
+      "to": "NODE-MOHALI-SEC70",
+      "length_m": 1400,
+      "speed_kmh": 50.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-MOHALI-PH8",
+      "to": "NODE-AIRPORT-RD",
+      "length_m": 2500,
+      "speed_kmh": 65.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-AIRPORT-RD",
+      "to": "NODE-ZIRAKPUR-CHOWK",
+      "length_m": 7200,
+      "speed_kmh": 75.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-MOHALI-SEC70",
+      "to": "NODE-SUNNY-ENCLAVE",
+      "length_m": 4200,
+      "speed_kmh": 55.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-SUNNY-ENCLAVE",
+      "to": "NODE-KHARAR",
+      "length_m": 3500,
+      "speed_kmh": 60.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-HOUSING-BOARD",
+      "to": "NODE-PKL-SEC5",
+      "length_m": 3000,
+      "speed_kmh": 55.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-PKL-SEC5",
+      "to": "NODE-PKL-MDC",
+      "length_m": 2400,
+      "speed_kmh": 50.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-PKL-SEC5",
+      "to": "NODE-PKL-SEC7",
+      "length_m": 1200,
+      "speed_kmh": 45.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-PKL-SEC7",
+      "to": "NODE-PKL-SEC11",
+      "length_m": 1400,
+      "speed_kmh": 50.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-PKL-SEC11",
+      "to": "NODE-OLD-PKL",
+      "length_m": 2100,
+      "speed_kmh": 55.0,
+      "bidirectional": true
+    },
+    {
+      "from": "NODE-OLD-PKL",
+      "to": "NODE-ZIRAKPUR-CHOWK",
+      "length_m": 4500,
+      "speed_kmh": 60.0,
+      "bidirectional": true
+    }
+  ]
+}
