@@ -226,51 +226,62 @@ def get_reservations():
 
 @app.post("/request")
 def create_request(req: EmergencyRequest):
-    """Allocate the best hospital and create a reservation (TTL = 10 min)."""
-    hid, h_snap, eta_sec = _best_hospital(req.lat, req.lon, req.resource_type)
-    if not hid:
-        raise HTTPException(503, "No beds available in any hospital")
+    """Allocate the best hospital and create a reservation (TTL = 10 min).
 
-    patient = req.patient_name or random.choice(PATIENT_NAMES)
-    ambulance = req.ambulance or random.choice(AMBULANCE_NAMES)
-    rid = str(uuid.uuid4())[:8].upper()
+    The bed check and the decrement happen inside the SAME lock, so two
+    simultaneous requests can never take the same last bed.
+    """
     TTL = 600   # 10 minutes
+    for _attempt in range(5):
+        hid, h_snap, eta_sec = _best_hospital(req.lat, req.lon, req.resource_type)
+        if not hid:
+            raise HTTPException(503, "No beds available in any hospital")
 
-    with _lock:
-        hospital_state[hid]["available_beds"] -= 1
-        if hospital_state[hid]["available_beds"] == 0:
-            hospital_state[hid]["status"] = "FULL"
-        elif hospital_state[hid]["available_beds"] < hospital_state[hid]["total_beds"] * 0.15:
-            hospital_state[hid]["status"] = "CRITICAL"
-        hospital_state[hid]["last_updated"] = time.time()
+        patient = req.patient_name or random.choice(PATIENT_NAMES)
+        ambulance = req.ambulance or random.choice(AMBULANCE_NAMES)
+        rid = str(uuid.uuid4())[:8].upper()
 
-        reservations[rid] = {
-            "id":            rid,
-            "patient_name":  patient,
-            "ambulance":     ambulance,
-            "hospital_id":   hid,
-            "hospital_name": h_snap["name"],
-            "resource_type": req.resource_type,
-            "status":        "EN_ROUTE",
-            "expires_at":    time.time() + TTL,
-            "created_at":    time.time(),
-            "eta_sec":       int(eta_sec),
-            "req_lat":       req.lat,
-            "req_lon":       req.lon,
+        with _lock:
+            h = hospital_state[hid]
+            if h["available_beds"] <= 0:
+                continue          # someone else took the last bed -> pick again
+            h["available_beds"] -= 1
+            if h["available_beds"] == 0:
+                h["status"] = "FULL"
+            elif h["available_beds"] < h["total_beds"] * 0.15:
+                h["status"] = "CRITICAL"
+            h["last_updated"] = time.time()
+            remaining = h["available_beds"]
+
+            reservations[rid] = {
+                "id":            rid,
+                "patient_name":  patient,
+                "ambulance":     ambulance,
+                "hospital_id":   hid,
+                "hospital_name": h_snap["name"],
+                "resource_type": req.resource_type,
+                "status":        "EN_ROUTE",
+                "expires_at":    time.time() + TTL,
+                "created_at":    time.time(),
+                "eta_sec":       int(eta_sec),
+                "req_lat":       req.lat,
+                "req_lon":       req.lon,
+            }
+
+        return {
+            "reservation_id":  rid,
+            "hospital_id":     hid,
+            "hospital_name":   h_snap["name"],
+            "hospital_lat":    h_snap["lat"],
+            "hospital_lon":    h_snap["lon"],
+            "ambulance":       ambulance,
+            "eta_sec":         int(eta_sec),
+            "ttl_sec":         TTL,
+            "resource_type":   req.resource_type,
+            "available_after": remaining,
         }
 
-    return {
-        "reservation_id":  rid,
-        "hospital_id":     hid,
-        "hospital_name":   h_snap["name"],
-        "hospital_lat":    h_snap["lat"],
-        "hospital_lon":    h_snap["lon"],
-        "ambulance":       ambulance,
-        "eta_sec":         int(eta_sec),
-        "ttl_sec":         TTL,
-        "resource_type":   req.resource_type,
-        "available_after": h_snap["available_beds"] - 1,
-    }
+    raise HTTPException(503, "Could not secure a bed, please retry")
 
 @app.post("/release")
 def release_reservation(req: ReleaseRequest):
@@ -287,6 +298,50 @@ def release_reservation(req: ReleaseRequest):
             if hospital_state[hid]["available_beds"] > 0:
                 hospital_state[hid]["status"] = "AVAILABLE"
     return {"released": True, "reservation_id": req.reservation_id}
+
+@app.get("/benchmark")
+def run_benchmark(seeds: int = 5, requests: int = 100):
+    """Runs the REAL discrete-event simulation (3 policies, surge scenario)."""
+    import numpy as np
+    if BASE_DIR not in sys.path:
+        sys.path.insert(0, BASE_DIR)
+    from sim.request_generator import RequestGenerator
+    from sim.policies import NearestHospitalPolicy, PortalCountPolicy, LifelineCorePolicy
+    from sim.simulator import SimulationEngine
+    from sim.city_model import CityModel as SimCity
+
+    seeds = max(1, min(seeds, 20))
+    requests = max(20, min(requests, 300))
+    sim_city = SimCity(
+        os.path.join(DATA_DIR, "hospitals.json"),
+        os.path.join(DATA_DIR, "tricity_roads.json"),
+    )
+    policies = {
+        "Nearest Hospital": NearestHospitalPolicy,
+        "Portal Count":     PortalCountPolicy,
+        "Lifeline Core":    LifelineCorePolicy,
+    }
+    out = []
+    for name, Pol in policies.items():
+        miss, miss_cnt, redirects, times = [], [], [], []
+        for seed in range(42, 42 + seeds):
+            wl = RequestGenerator(seed=seed).generate_workload(
+                num_requests=requests, include_surge=True)
+            r = SimulationEngine(city=sim_city, seed=seed,
+                                 chaos_freeze_hospitals=[]).run_simulation(wl, Pol())
+            miss.append(r["bed_miss_rate_pct"])
+            miss_cnt.append(r["bed_miss_count"])
+            redirects.append(r["redirect_count"])
+            times.append(r["mean_time_to_treatment_min"])
+        out.append({
+            "policy":    name,
+            "misses":    round(float(np.mean(miss_cnt)), 1),
+            "miss_rate": round(float(np.mean(miss)), 2),
+            "redirects": round(float(np.mean(redirects)), 1),
+            "mean_time": round(float(np.mean(times)), 1),
+        })
+    return {"seeds": seeds, "requests_per_run": requests, "results": out}
+
 
 @app.get("/stats")
 def get_stats():
@@ -322,4 +377,3 @@ def serve_root():
 @app.get("/ui")
 def serve_ui():
     return FileResponse(os.path.join(FRONT_DIR, "index.html"))
-

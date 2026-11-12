@@ -3104,29 +3104,31 @@
   // ══════════════════════════════════════════════════════
   async function runBenchmark() {
     const btn = document.getElementById('btn-benchmark');
-    btn.textContent = 'Simulating 50 Concurrent Patients...';
+    btn.textContent = 'Running real simulation...';
     btn.disabled = true;
-
-    await new Promise(r => setTimeout(r, 1500));
-
-    const results = [
-      { policy: 'Nearest Hospital', misses: 4, rate: '8.0%', redirects: 7, time: '12.4m', cls: '' },
-      { policy: 'Portal Count', misses: 2, rate: '4.0%', redirects: 5, time: '14.1m', cls: '' },
-      { policy: 'Lifeline Core', misses: 0, rate: '0.00%', redirects: 0, time: '9.8m', cls: 'highlight' },
-    ];
-
     const tbody = document.getElementById('benchmark-body');
-    tbody.innerHTML = results.map(r => `
-      <tr class="${r.cls}">
-        <td><span class="policy-badge ${r.policy === 'Lifeline Core' ? 'lifeline' : ''}">${r.policy}</span></td>
-        <td>${r.misses === 0 ? '<span class="zero-badge">0</span>' : r.misses}</td>
-        <td>${r.rate === '0.00%' ? '<span class="zero-badge">0.00%</span>' : r.rate}</td>
-        <td>${r.redirects}</td>
-        <td>${r.time}</td>
-      </tr>
-    `).join('');
 
-    btn.textContent = 'Simulation Complete ✓';
+    try {
+      const res = await fetch('/benchmark?seeds=5&requests=100');
+      if (!res.ok) throw new Error('Benchmark failed');
+      const data = await res.json();
+
+      tbody.innerHTML = data.results.map(r => {
+        const hi = r.policy === 'Lifeline Core';
+        return `
+        <tr class="${hi ? 'highlight' : ''}">
+          <td><span class="policy-badge ${hi ? 'lifeline' : ''}">${r.policy}</span></td>
+          <td>${r.misses === 0 ? '<span class="zero-badge">0</span>' : r.misses}</td>
+          <td>${r.miss_rate === 0 ? '<span class="zero-badge">0.00%</span>' : r.miss_rate + '%'}</td>
+          <td>${r.redirects}</td>
+          <td>${r.mean_time} m</td>
+        </tr>`;
+      }).join('');
+      btn.textContent = 'Simulation Complete ✓';
+    } catch (err) {
+      console.error(err);
+      btn.textContent = 'Backend not reachable';
+    }
     setTimeout(() => {
       btn.textContent = 'Execute Monte Carlo Simulation';
       btn.disabled = false;
